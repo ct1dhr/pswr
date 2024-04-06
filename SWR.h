@@ -8,12 +8,7 @@
 #include <arduino.h>
 
 
-#include <Adafruit_ADS1X15.h>
-//#include <Wire.h>                       
-#include <math.h>
-#include <EEPROM.h>
-#include "_EEPROMAnything.h"
-#include <ESP32Encoder.h>
+
 
 
 
@@ -64,13 +59,30 @@ float voltLdbm;
 //#define WIRE_ENABLED              0 // 1 to enable, 0 to disable
 #define TESTE                      0  // se 1 imprime algus valores para teste
 #define TESTE2                      0
-#define TESTE_IN                     0
+#define TESTE_IN                     1
 
 #define LOOP_TIME 1000
 
 #define ADS1115                   1 // ads1115 instalado
+#define ADS2                       0  //2 ads1115 instalados
 //#define ads1115                   0  //  sem ads1115
 //
+#if ADS1115
+
+
+  #if !ADS2
+     #include <Adafruit_ADS1X15.h>
+   #else
+   #include<ADS1115_WE.h>
+   #endif
+#endif
+
+//#include <Wire.h>                       
+#include <math.h>
+
+
+#include <ESP32Encoder.h>
+
 
 #if NEXTION
 //#include <doxygen.h>

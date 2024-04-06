@@ -13,9 +13,11 @@
 
   
 -----------------------  V E R S I O N   N O T E S ---------------------
-  Build .01   2024MAR04
- -Erased -EEPROMAnything.h  and used SPIFFS.h  instead EEPROM.h to store 
-   config variables.
+  # Build .00  2024MAR01
+   - Add OTA feature
+  # Build .01   2024MAR04
+  - Erased -EEPROMAnything.h  and used SPIFFS.h  instead EEPROM.h to store 
+    config variables.
 
 
 
@@ -36,6 +38,11 @@
 
 const char* ssid = "CCebolais3";
 const char* password = "CasadoVelho";     
+
+String ssid_from_display = "";
+String password_from_display = "";
+
+String linkOTA ="https://github.com/ct1dhr/pswr/tree/master/build/esp32.esp32.esp32da";
 
 void SendNextionFwd();
 void SendNextionRev();
@@ -59,10 +66,31 @@ bool saveConfig(String file_name);
 
 #define FORMAT_SPIFFS_IF_FAILED true
 const String config_filename = "/config.json";
-
+/*
+// ads.setGain(GAIN_TWOTHIRDS);  // 2/3x gain +/- 6.144V  1 bit = 3mV      0.1875mV (default)
+  // ads.setGain(GAIN_ONE);        // 1x gain   +/- 4.096V  1 bit = 2mV      0.125mV
+  // ads.setGain(GAIN_TWO);        // 2x gain   +/- 2.048V  1 bit = 1mV      0.0625mV
+  // ads.setGain(GAIN_FOUR);       // 4x gain   +/- 1.024V  1 bit = 0.5mV    0.03125mV
+  // ads.setGain(GAIN_EIGHT);      // 8x gain   +/- 0.512V  1 bit = 0.25mV   0.015625mV
+  // ads.setGain(GAIN_SIXTEEN);    // 16x gain  +/- 0.256V  1 bit = 0.125mV  0.0078125mV
+  GND -> 0x48 (or leave unconnected)
+* VCC -> 0x49
+* SDA -> 0x4A
+* SCL -> 0x4B
+*/
 #if ADS1115
-Adafruit_ADS1115 ads;  /* Use this for the 16-bit version */
+
+
+  #if !ADS2
+     Adafruit_ADS1015 ads0; 
+   #else
+   ADS1115_WE ads0 = ADS1115_WE(0x48);
+   ADS1115_WE ads1 = ADS1115_WE(0x49);
+   #endif
 #endif
+
+
+
 volatile adbuffer_t measure;// Two 256 byte circular buffers carrying the sampled adc-inputs
                             // from the interrupt function to the main loop.
                             
@@ -74,6 +102,7 @@ double      r_inst;         // Calculated Reverse voltage
 #if AD8307_INSTALLED
 double      ad8307_FdBm;    // Measured AD8307 forward voltage in dBm
 double      ad8307_RdBm;    // Measured AD8307 reverse current in dBm
+
 #endif
 double      fwd_power_mw;   // Calculated forward power in mW
 double      ref_power_mw;   // Calculated reflected power in mW
@@ -89,8 +118,8 @@ double      power_db_pep;   // Calculated PEP power in dBm
 double      power_db_long;  // Calculated MAX power in dBm, 30 sec or longer window
 double      swr=1.0;        // SWR as an absolute value
 double      swr_avg=1.0;    // SWR average over 10 ms (smoothed value)
-int16_t adc0, adc1, adc2, adc3;
-     double volts0, volts1, volts2, volts3, vtest;
+int16_t adc0, adc1, adc2, adc3, adc0b, adc1b, adc2b, adc3b;
+     double volts0, volts1, volts2, volts3,volts4,volts5,volts6,volts7, vtest;
 uint16_t    menu_level = 0; // Used with PSWRmenu. Keep track of which menu we are in
 char        lcd_buf[82];    // Used to process data to be passed to LCD and USB Serial
 
@@ -110,7 +139,7 @@ unsigned long refresh_timer = millis();
 //-
 int led = 2;
 int att_c0, att_c1,att_c2,att_c3,att_c4 ;
-
+String coupler_name ="";
 // Variables in ram/flash rom (default)
 var_t  R  = {
 { // Coupler 1 Meter calibration for HF    1
@@ -341,7 +370,7 @@ WiFi.mode(WIFI_STA);
 
   
           
-readConfig(config_filename);
+   readConfig(config_filename);
 
   pinMode(led, OUTPUT);
 
@@ -371,28 +400,20 @@ Serial.print("NO Nextion!...");
 Serial2.begin(115200);
 #endif
 #if ADS1115
- if (!ads.begin()) {
-    Serial.println("Failed to initialize ADS.");
-    while (1);
-  }
- #endif
+
+
+  #if !ADS2
+      ads0.begin(); 
+   #else
+   ads0.init();
+   ads1.init();
+   #endif
+#endif
  
-EEPROM.begin(512);
 
-coldstart = EEPROM.read(0);               // Grab the coldstart byte indicator in EEPROM for
 
-                                         // comparison with the COLDSTART_REFERENCE
-  // Initialize all memories if first upload or if COLDSTART_REF has been modified
-  // either through PSWR_A.h or through Menu functions
-  if (coldstart != COLDSTART_REF)
-  { 
-    EEPROM.write(0,COLDSTART_REF);          // COLDSTART_REF in first byte indicates all initialized
-    EEPROM_writeAnything(1,R);              // Write default settings into EEPROM
-  }
-  else                                      // EEPROM contains stored data, retrieve the data
-  {
-    EEPROM_readAnything(1,R);               // Read the stored data
-  }
+
+  
 
 }// FIM SETUP
 

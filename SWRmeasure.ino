@@ -1,7 +1,7 @@
 
 void adc_poll_and_feed_circular(void)
 {
- #if ADS1115
+#if ADS1115
     
 // ads.setGain(GAIN_TWOTHIRDS);  // 2/3x gain +/- 6.144V  1 bit = 3mV      0.1875mV (default)
   // ads.setGain(GAIN_ONE);        // 1x gain   +/- 4.096V  1 bit = 2mV      0.125mV
@@ -11,16 +11,45 @@ void adc_poll_and_feed_circular(void)
   // ads.setGain(GAIN_SIXTEEN);    // 16x gain  +/- 0.256V  1 bit = 0.125mV  0.0078125mV
 
      
+  #if ADS2 
 
-     adc0 = ads.readADC_SingleEnded(0);
-     adc1 = ads.readADC_SingleEnded(1);
-     adc2 = ads.readADC_SingleEnded(2);
-     adc3 = ads.readADC_SingleEnded(3);
+    ads0.setVoltageRange_mV(ADS1115_RANGE_6144);
+    ads0.setMeasureMode(ADS1115_CONTINUOUS); 
+    ads0.setCompareChannels(ADS1115_COMP_0_GND);
+    volts1 = ads0.getResult_V();   // canal 0
+    ads0.setCompareChannels(ADS1115_COMP_1_GND);
+    volts2 = ads0.getResult_V();   // canal 1
+     ads0.setCompareChannels(ADS1115_COMP_2_GND);
+    volts3 = ads0.getResult_V();   // canal 2
+      ads0.setCompareChannels(ADS1115_COMP_3_GND);
+    volts4 = ads0.getResult_V();   // canal 3
 
-     volts0 = ads.computeVolts(adc0);
-     volts1 = ads.computeVolts(adc1);
-     volts2 = ads.computeVolts(adc2);
-     volts3 = ads.computeVolts(adc3);
+    ads1.setVoltageRange_mV(ADS1115_RANGE_6144);
+    ads1.setMeasureMode(ADS1115_CONTINUOUS); 
+    ads1.setCompareChannels(ADS1115_COMP_0_GND);
+    volts5 = ads1.getResult_V();   // canal 0
+    ads1.setCompareChannels(ADS1115_COMP_1_GND);
+    volts6 = ads1.getResult_V();   // canal 1
+     ads1.setCompareChannels(ADS1115_COMP_2_GND);
+    volts7 = ads1.getResult_V();   // canal 2
+      ads1.setCompareChannels(ADS1115_COMP_3_GND);
+    volts8 = ads1.getResult_V();   // canal 3
+
+
+
+  #else
+     adc0 = ads0.readADC_SingleEnded(0);
+     adc1 = ads0.readADC_SingleEnded(1);
+     adc2 = ads0.readADC_SingleEnded(2);
+     adc3 = ads0.readADC_SingleEnded(3);
+
+     volts0 = ads0.computeVolts(adc0);
+     volts1 = ads0.computeVolts(adc1);
+     volts2 = ads0.computeVolts(adc2);
+     volts3 = ads0.computeVolts(adc3);
+
+
+  #endif   
 /*
  VOUT = VY log (VIN /VX) (1)
 where:
@@ -60,12 +89,41 @@ furo nesta caixa, como indicado na figura. A capacidade de acoplamento
    // measure.rev[measure.incount] = volts1; // contained in bit positions 0 to 11.
    //   measure.fwd[measure.incount] =volts0*10000; // Input from AD7991 is 12 bit resolution
    //  measure.rev[measure.incount] = volts1*10000; // contained in bit positions 0 to 11.
-
+/*
       measure.fwd[measure.incount] =VtomV(volts0); // Input from AD7991 is 12 bit resolution
-     measure.rev[measure.incount] = VtomV(volts1); // contained in bit positions 0 to 11.
-     measure.incount++;  
+      measure.rev[measure.incount] = VtomV(volts1); // contained in bit positions 0 to 11.
+      measure.incount++;  
+*/
+     switch (current_coupler) {
+  case 1:
+      measure.fwd[measure.incount] =VtomV(volts0); // Input from AD7991 is 12 bit resolution
+      measure.rev[measure.incount] = VtomV(volts1); // contained in bit positions 0 to 11.
+      measure.incount++; 
+    break;
+  case 2:
+    measure.fwd[measure.incount] =VtomV(volts2); // Input from AD7991 is 12 bit resolution
+      measure.rev[measure.incount] = VtomV(volts3); // contained in bit positions 0 to 11.
+      measure.incount++; 
+    break;
+    case 3:
+     measure.fwd[measure.incount] =VtomV(volts4); // Input from AD7991 is 12 bit resolution
+      measure.rev[measure.incount] = VtomV(volts5); // contained in bit positions 0 to 11.
+      measure.incount++; 
+    break;
+    case 4:
+      measure.fwd[measure.incount] =VtomV(volts6); // Input from AD7991 is 12 bit resolution
+      measure.rev[measure.incount] = VtomV(volts7); // contained in bit positions 0 to 11.
+      measure.incount++; 
+    break;
+  default:
+    // if nothing else matches, do the default
+    // default is optional
+    break;
+}
 
- #endif  
+
+
+ #endif  // de ads1115
   
  
 } //FIM adc_poll_and_feed_circular

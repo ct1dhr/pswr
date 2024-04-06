@@ -121,7 +121,7 @@ void calibrate_menu_level2(void)
         R.cal_AD[cal_set].Fwd = adc_ref * volts0;
         R.cal_AD[cal_set].Rev = R.cal_AD[cal_set].Fwd;
       }
-      EEPROM_writeAnything(1,R);
+      saveConfig(config_filename);
       nex.writeStr("msg.txt","Value Stored");
     }
     // Se for inverso, calibramos apenas para a direção reversa
@@ -137,7 +137,7 @@ void calibrate_menu_level2(void)
       {
         R.cal_AD[cal_set].Rev = adc_ref * volts1;
       }
-      EEPROM_writeAnything(1,R);
+      saveConfig(config_filename);
       nex.writeStr("msg.txt","Valor Guardado");
     }
     else                                                 // cal_sig_direction_quality == CAL_BAD
@@ -264,8 +264,8 @@ void calibrate_menu(void)
         R.cal_AD[cal_set].Fwd = adc_ref * fwd/4096.0;
         R.cal_AD[cal_set].Rev = R.cal_AD[cal_set].Fwd;
       }
-      EEPROM_writeAnything(1,R);
-      VirtLCDy.print("Value Stored");
+      saveConfig(config_filename);
+      
     }
     // Se for inverso, calibramos apenas para a direção reversa
     else if (cal_sig_direction_quality == CAL_REV)
@@ -280,7 +280,7 @@ void calibrate_menu(void)
       {
         R.cal_AD[cal_set].Rev = adc_ref * rev/4096.0;
       }
-      EEPROM_writeAnything(1,R);
+      saveConfig(config_filename);
       
       nex.writeStr("msg.txt","Valor alterado");
     }

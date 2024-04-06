@@ -15,11 +15,18 @@ bool readConfig(String file_name) {
     return false;
   }
 //***********************************************
+  const String ssid1 = doc["ssid"];
+  const String pass1 = doc["pass"];
+
+ ssid_from_display = ssid1;
+ password_from_display = pass1;
+
 const int16_t  dbmHigh = doc["dbmHigh"];
   const int16_t  dbmLow = doc["dbmLow"];
   const double   fwd_h = doc["fwd_h"];
   const double   fwd_l = doc["fwd_l"];
   const int   att = doc["att"];
+
 
            att_c0= att;
           R.cal_AD[0].db10m = dbmHigh;
@@ -104,6 +111,11 @@ bool saveConfig(String file_name) {
   StaticJsonDocument<1024> doc;
 //**************************************
   // write variables to JSON file
+
+
+   doc["ssid"]= ssid_from_display;
+   doc["pass"]= password_from_display;
+
    doc["att"]  = att_c0;
    doc["dbmHigh"]  =  R.cal_AD[0].db10m;
    doc["fwd_h"]  =    R.cal_AD[0].Fwd;
