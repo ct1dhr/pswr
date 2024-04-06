@@ -1,4 +1,25 @@
+/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                      PSWR Version 1.03.01
+                Platform Esp32 with Nextion Display
+                          CT1DHR
 
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+  based on the project of Loftur E. Jonasson  (tf3lj [at] arrl [dot] net)
+   See README.md file
+
+  
+-----------------------  V E R S I O N   N O T E S ---------------------
+  Build .01   2024MAR04
+ -Erased -EEPROMAnything.h  and used SPIFFS.h  instead EEPROM.h to store 
+   config variables.
+
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 #include <SPIFFS.h>
 #include <ArduinoJson.h>    
 #include "SWR.h"
