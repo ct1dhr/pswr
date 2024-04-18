@@ -1,11 +1,11 @@
 void cFab()
 {
-DefaultSens ={10,2.5,-45,1.0};
+DefaultCPL ={10,2.5,-45,1.0,1};
 
-R.cal_AD[0].db10m= DefaultSens.highdbm*10;  // highdbm;  voltHdbn; lowdbm; voltLdbm;
-R.cal_AD[1].db10m= DefaultSens.lowdbm*10;
-R.cal_AD[0].Fwd= VtomV(DefaultSens.voltHdbn);
-R.cal_AD[1].Fwd = VtomV(DefaultSens.voltLdbm);
+R.cal_AD[0].db10m= DefaultCPL.highdbm*10;  // highdbm;  voltHdbn; lowdbm; voltLdbm;
+R.cal_AD[1].db10m= DefaultCPL.lowdbm*10;
+R.cal_AD[0].Fwd= VtomV(DefaultCPL.voltHdbn);
+R.cal_AD[1].Fwd = VtomV(DefaultCPL.voltLdbm);
 /*
 R.cal_AD[0].db10m= att_cal + 100;
 R.cal_AD[1].db10m= att_cal+ -450;
@@ -20,13 +20,13 @@ if ( coupler_cal == 1)
         {
         // First coupler
           att_c1 = att;
-          R.cal_AD1[0].db10m =dbmHigh*10;
-          R.cal_AD1[0].Fwd = VtomV(fwd_h);
+          R.cal_AD1[0].db10m =dbmHigh;
+          R.cal_AD1[0].Fwd = fwd_h;
           R.cal_AD1[0].Rev = R.cal_AD[0].Fwd;
           // Set second calibration point at 30 dB less
-          R.cal_AD1[1].db10m = dbmLow*10;
-          R.cal_AD1[1].Fwd = VtomV(fwd_l);
-          R.cal_AD1[1].Rev = VtomV(fwd_l);  
+          R.cal_AD1[1].db10m = dbmLow;
+          R.cal_AD1[1].Fwd = fwd_l;
+          R.cal_AD1[1].Rev = fwd_l;  
         }
         if ( coupler_cal == 2)
         {
@@ -39,7 +39,7 @@ if ( coupler_cal == 1)
           // Set second calibration point at 30 dB less
           R.cal_AD2[1].db10m = dbmLow;
           R.cal_AD2[1].Fwd   = fwd_l;
-          R.cal_AD2[1].Rev   = VtomV(fwd_l); 
+          R.cal_AD2[1].Rev   = fwd_l; 
         }
         if ( coupler_cal == 3)
         {
@@ -51,7 +51,7 @@ if ( coupler_cal == 1)
           // Set second calibration point at 30 dB less
           R.cal_AD3[1].db10m = dbmLow;
           R.cal_AD3[1].Fwd   = fwd_l;
-          R.cal_AD3[1].Rev   = VtomV(fwd_l); 
+          R.cal_AD3[1].Rev   = fwd_l; 
         }
         if ( coupler_cal == 4)
         {
@@ -64,7 +64,39 @@ if ( coupler_cal == 1)
           // Set second calibration point at 30 dB less
           R.cal_AD4[1].db10m = dbmLow;
           R.cal_AD4[1].Fwd   = fwd_l;
-          R.cal_AD4[1].Rev   = VtomV(fwd_l); 
+          R.cal_AD4[1].Rev   = fwd_l; 
         }
 saveConfig(config_filename);
+}
+
+int escala()
+{
+  int esc=0;
+if(fwd_power_mw > 1000000 ){esc=1;} //> 1kw 
+if(fwd_power_mw > 500000 and fwd_power_mw <=1000000){esc=2;} //500w  a 1kw
+if(fwd_power_mw > 100000 and fwd_power_mw <=500000){esc=3;}// 100w a 500w
+if(fwd_power_mw > 50000 and fwd_power_mw <=100000){esc=4;}// 50w a 100w
+if(fwd_power_mw > 10000 and fwd_power_mw <=50000){esc=5;}// 10w a 50w
+if(fwd_power_mw > 1000 and fwd_power_mw <=10000){esc=6;}// 1w a 10w
+if(fwd_power_mw <=1000){esc=7;}// menor do que 1w
+return esc;
+}// fim escala
+void onePointCal(int16_t db, double volts)
+{
+
+SecondPointdB=db-300;
+SecondPointVolt=volts-LOGAMP1_SLOPE * .001 * 30;
+ 
+}
+int inteiro(double n){return floor(n);}
+int frac(double n){
+
+
+return n-floor(n);
+
+}
+
+double powerRatio(int16_t dB){
+
+return pow(10,(dB/10));
 }

@@ -61,6 +61,10 @@ void refreshPage1();
 void refreshPage2();
 void refreshPage3();
 void refreshPage4();
+void refreshPage5();
+void refreshPage6();
+void refreshPage7();
+void refreshPage10();
 bool readConfig(String file_name);
 bool saveConfig(String file_name);
 
@@ -106,6 +110,8 @@ double      ad8307_RdBm;    // Measured AD8307 reverse current in dBm
 #endif
 double      fwd_power_mw;   // Calculated forward power in mW
 double      ref_power_mw;   // Calculated reflected power in mW
+double      fwd_power_w;    // calculated foward power in w
+double      ref_power_w;    // Calculated reflected power in W
 double      power_mw;       // Calculated power in mW
 double      power_mw_pk;    // Calculated 100ms peak power in mW
 double      power_mw_pep;   // Calculated PEP power in mW (1s, 2.5s or 5s)
@@ -138,8 +144,9 @@ int         cur_band = 1;   // Band mode active
 unsigned long refresh_timer = millis(); 
 //-
 int led = 2;
-int att_c0, att_c1,att_c2,att_c3,att_c4 ;
-String coupler_name ="";
+int16_t att_c0, att_c1,att_c2,att_c3,att_c4 =0 ;
+String coupler_name[4];
+boolean testMode= false;
 // Variables in ram/flash rom (default)
 var_t  R  = {
 { // Coupler 1 Meter calibration for HF    1
@@ -240,7 +247,7 @@ bool leitura_c1 = false;
 bool leitura_c2 = false;
 bool leitura_c3 = false;
 bool leitura_c4 = false;
-
+bool flag1= false;
 
  int led2 =2;
  int current_coupler = 1;
@@ -268,30 +275,39 @@ void IRAM_ATTR Enc_SW() {
  unsigned long timer ;
        unsigned long pageRefreshTimer = millis(); // Timer for DATA_REFRESH_RATE
         #define DATA_REFRESH_RATE 1000 
-
-couplerSens SensHF1;  // para guardar as calibrações highdbm;  voltHdbn; lowdbm; voltLdbm;
+/*
+couplerSens CPL1;  // para guardar as calibrações highdbm;  voltHdbn; lowdbm; voltLdbm;
 couplerSens SensHF2;
 couplerSens SensVHF;
 couplerSens SensUHF;
 couplerSens DefaultSens;
 couplerSens CurrentSens; // coupler selecionado
-
-
+*/
+couplerSens CPL1;  // para guardar as calibrações highdbm;  voltHdbn; lowdbm; voltLdbm e att;
+couplerSens CPL2;
+couplerSens CPL3;
+couplerSens CPL4;
+couplerSens DefaultCPL;
+couplerSens CurrentCPL; // coupler selecionado
+double PdBm;
+double PdBmRev;
+int fsc;
    // defenir aqui variaveis nextion
    // page 0
         String text1,text2 ;
         // sensor 1 page 2
-        int16_t dbm1_s1 ;
-        int16_t dbm2_s1 ;
-        float volt1_s1;
-        float volt2_s1;
-        float att_s1;
-        float att_cal;
-        
+        int16_t dbm1_s1,dbm1_s2,dbm1_s3,dbm1_s4,dbm1_s5;
+        int16_t dbm2_s1,dbm2_s2,dbm2_s3,dbm2_s4 ,dbm2_s5;
+        double volt1_s1,volt1_s2,volt1_s3,volt1_s4,volt1_s5;
+        double volt2_s1,volt2_s2,volt2_s3,volt2_s4,volt2_s5;
+        int16_t att_s1,att_s2,att_s3,att_s4,att_s5;
+        int16_t att_cal;
+        int16_t SecondPointdB;
+        double SecondPointVolt;
         bool newPageLoaded = false; 
     //  page 1
 
-
+String  endChar = String(char(0xff)) + String(char(0xff)) + String(char(0xff));
 
     // page 2
 
@@ -306,7 +322,8 @@ couplerSens CurrentSens; // coupler selecionado
 
 void setup() {
 Serial.begin(115200);
-WiFi.mode(WIFI_STA);
+#if WIFI
+  WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   while (WiFi.waitForConnectResult() != WL_CONNECTED) {
     Serial.println("Connection Failed! Rebooting...");
@@ -341,7 +358,7 @@ WiFi.mode(WIFI_STA);
     });
 
   ArduinoOTA.begin();
-
+#endif
   Serial.println("Ready");
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
@@ -413,7 +430,6 @@ Serial2.begin(115200);
 
 
 
-  
 
 }// FIM SETUP
 
@@ -422,9 +438,9 @@ Serial2.begin(115200);
 ///////////////////////////////////////////////////////////////////
 
 void loop() {
-
+#if WIFI
 ArduinoOTA.handle();
-
+#endif
 #if EASYNEXTION
  nex.NextionListen(); 
  if ((millis() - timer) > LOOP_TIME) {
@@ -439,16 +455,24 @@ ArduinoOTA.handle();
 #endif
 
   adc_poll_and_feed_circular();
-  pswr_sync_from_interrupt();               // Read and process circular buffers containing adc input,
-  calc_SWR_and_power();   
-  SendNextionFwd();
+  pswr_sync_from_interrupt(); 
+    pswr_determine_dBm();            // Read and process circular buffers containing adc input,
+    determine_power_pep_pk(); 
+  calc_SWR_and_power();  
+
+ SendNextionFwd();
   SendNextionRev();
+  
+  if(fwd_power_mw <= 0 and !flag1){
+    Serial2.print("page 11");Serial2.print(endChar);
+    flag1=true;
+    
+    }
+
+    
   //Serial.print("recebido do nextion : ");
  // Serial.println(volt1_s1);
   //receive_att();
-  bool leitura_c1 = false;
-bool leitura_c2 = false;
-bool leitura_c3 = false;
-bool leitura_c4 = false;
+
 
 }// FIM do LOOP

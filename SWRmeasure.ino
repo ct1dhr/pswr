@@ -16,24 +16,24 @@ void adc_poll_and_feed_circular(void)
     ads0.setVoltageRange_mV(ADS1115_RANGE_6144);
     ads0.setMeasureMode(ADS1115_CONTINUOUS); 
     ads0.setCompareChannels(ADS1115_COMP_0_GND);
-    volts1 = ads0.getResult_V();   // canal 0
+    volts0 = ads0.getResult_V();   // canal 0
     ads0.setCompareChannels(ADS1115_COMP_1_GND);
-    volts2 = ads0.getResult_V();   // canal 1
+    volts1 = ads0.getResult_V();   // canal 1
      ads0.setCompareChannels(ADS1115_COMP_2_GND);
-    volts3 = ads0.getResult_V();   // canal 2
+    volts2 = ads0.getResult_V();   // canal 2
       ads0.setCompareChannels(ADS1115_COMP_3_GND);
-    volts4 = ads0.getResult_V();   // canal 3
+    volts3 = ads0.getResult_V();   // canal 3
 
     ads1.setVoltageRange_mV(ADS1115_RANGE_6144);
     ads1.setMeasureMode(ADS1115_CONTINUOUS); 
     ads1.setCompareChannels(ADS1115_COMP_0_GND);
-    volts5 = ads1.getResult_V();   // canal 0
+    volts4 = ads1.getResult_V();   // canal 0
     ads1.setCompareChannels(ADS1115_COMP_1_GND);
-    volts6 = ads1.getResult_V();   // canal 1
+    volts5 = ads1.getResult_V();   // canal 1
      ads1.setCompareChannels(ADS1115_COMP_2_GND);
-    volts7 = ads1.getResult_V();   // canal 2
+    volts6 = ads1.getResult_V();   // canal 2
       ads1.setCompareChannels(ADS1115_COMP_3_GND);
-    volts8 = ads1.getResult_V();   // canal 3
+    volts7 = ads1.getResult_V();   // canal 3
 
 
 
@@ -47,19 +47,23 @@ void adc_poll_and_feed_circular(void)
      volts1 = ads0.computeVolts(adc1);
      volts2 = ads0.computeVolts(adc2);
      volts3 = ads0.computeVolts(adc3);
-
+if(volts0 < 0.25){volts0 =0.25; }
+if(volts1 < 0.24){volts1 =0.24; }
+if(volts2 < 0.25){volts2 =0.25; }
+if(volts3 < 0.24){volts3 =0.24; }
 
   #endif   
 /*
  VOUT = VY log (VIN /VX) (1)
 where:
- VOUT is the output voltage,
- VY is called the slope voltage; the logarithm is usually taken
- to base-ten (in which case VY is also the volts-per-decade),
- VIN is the input voltage,
+ VOUT é a tensão de saída,
+ VY é chamada de tensão de slope; o logaritmo geralmente é obtido
+ para a base dez (nesse caso, VY também é volts por década),
+ VIN é a tensão de entrada,
  and
- VX is called the intercept voltage.
-A adaptação front-end mostrada na Figura 39 fornece a medição da potência que está sendo entregue de um amplificador final do transmissor para uma antena. A gama foi definida para cobrir a potência
+ VX é a tensão de intercept
+A adaptação front-end mostrada na Figura 39 fornece a medição da potência que está sendo entregue 
+de um amplificador final do transmissor para uma antena. A gama foi definida para cobrir a potência
 intervalo –30 dBm (7,07 mV rms, ou 1 μW) a +60 dBm (223 V rms,
 ou 1 kW). Uma razão de atenuação de tensão nominal de 158:1 (44 dB) é
 usados; assim, o intercept é movido de –84 dBm para –40 dBm e
@@ -85,15 +89,7 @@ furo nesta caixa, como indicado na figura. A capacidade de acoplamento
      volts0=vtest;
      volts1=0.2;
     #endif
-    // measure.fwd[measure.incount] =volts0; // Input from AD7991 is 12 bit resolution
-   // measure.rev[measure.incount] = volts1; // contained in bit positions 0 to 11.
-   //   measure.fwd[measure.incount] =volts0*10000; // Input from AD7991 is 12 bit resolution
-   //  measure.rev[measure.incount] = volts1*10000; // contained in bit positions 0 to 11.
-/*
-      measure.fwd[measure.incount] =VtomV(volts0); // Input from AD7991 is 12 bit resolution
-      measure.rev[measure.incount] = VtomV(volts1); // contained in bit positions 0 to 11.
-      measure.incount++;  
-*/
+
      switch (current_coupler) {
   case 1:
       measure.fwd[measure.incount] =VtomV(volts0); // Input from AD7991 is 12 bit resolution
@@ -101,12 +97,12 @@ furo nesta caixa, como indicado na figura. A capacidade de acoplamento
       measure.incount++; 
     break;
   case 2:
-    measure.fwd[measure.incount] =VtomV(volts2); // Input from AD7991 is 12 bit resolution
+      measure.fwd[measure.incount] =VtomV(volts2); // Input from AD7991 is 12 bit resolution
       measure.rev[measure.incount] = VtomV(volts3); // contained in bit positions 0 to 11.
       measure.incount++; 
     break;
     case 3:
-     measure.fwd[measure.incount] =VtomV(volts4); // Input from AD7991 is 12 bit resolution
+      measure.fwd[measure.incount] =VtomV(volts4); // Input from AD7991 is 12 bit resolution
       measure.rev[measure.incount] = VtomV(volts5); // contained in bit positions 0 to 11.
       measure.incount++; 
     break;
@@ -115,10 +111,17 @@ furo nesta caixa, como indicado na figura. A capacidade de acoplamento
       measure.rev[measure.incount] = VtomV(volts7); // contained in bit positions 0 to 11.
       measure.incount++; 
     break;
+    case 5:
+      measure.fwd[measure.incount] =VtomV(vtest); // Input from AD7991 is 12 bit resolution
+      measure.rev[measure.incount] = VtomV(0.2); // contained in bit positions 0 to 11.
+      measure.incount++; 
+    break;
+
   default:
     // if nothing else matches, do the default
     // default is optional
     break;
+
 }
 
 
@@ -127,6 +130,160 @@ furo nesta caixa, como indicado na figura. A capacidade de acoplamento
   
  
 } //FIM adc_poll_and_feed_circular
+//-----------------------------------------------------------------------------------------
+//                Convert Voltage Reading into Power when using AD8307
+//-----------------------------------------------------------------------------------------
+//
+void pswr_determine_dBm(void)
+{
+  double  delta_db;
+  double  delta_F, delta_R;
+  double  delta_Fdb, delta_Rdb;
+  double  temp;
+
+  // Calculate the slope gradient between the two calibration points:
+  //
+  // (dB_Cal1 - dB_Cal2)/(V_Cal1 - V_Cal2) = slope_gradient
+  //
+ 
+if(current_coupler==1)
+{
+  delta_db = (double)((R.cal_AD1[1].db10m - R.cal_AD1[0].db10m)/10.0);
+  delta_F = R.cal_AD1[1].Fwd - R.cal_AD1[0].Fwd;
+  delta_Fdb = delta_db/delta_F;
+  delta_R = R.cal_AD1[1].Rev - R.cal_AD1[0].Rev;
+  delta_Rdb = delta_db/delta_R;
+  //
+  PdBm =att_c1*(volts0 -1.0);
+  PdBmRev=att_c1*(volts1-1.0); // Outra forma de calculo baseado na atenuacão e slope e intercept do datasheet
+  // measured dB values are: (V - V_Cal1) * slope_gradient + dB_Cal1
+      // ad8307_FdBm = (adc_ref * (fwd/4096.0) - R.cal_AD[0].Fwd) * delta_Fdb + R.cal_AD[0].db10m/10.0;
+      //  ad8307_RdBm = (adc_ref * (rev/4096.0) - R.cal_AD[0].Rev) * delta_Rdb + R.cal_AD[0].db10m/10.0;
+      ad8307_FdBm = (fwd - R.cal_AD1[0].Fwd) * delta_Fdb + R.cal_AD1[0].db10m/10.0;
+       ad8307_RdBm =  (rev - R.cal_AD1[0].Rev) * delta_Rdb + R.cal_AD1[0].db10m/10.0;
+}
+if(current_coupler==2)
+{
+  delta_db = (double)((R.cal_AD2[1].db10m - R.cal_AD2[0].db10m)/10.0);
+  delta_F = R.cal_AD2[1].Fwd - R.cal_AD2[0].Fwd;
+  delta_Fdb = delta_db/delta_F;
+  delta_R = R.cal_AD2[1].Rev - R.cal_AD2[0].Rev;
+  delta_Rdb = delta_db/delta_R;
+  //
+  PdBm =att_c2*(volts2 - 1);
+  PdBmRev=att_c2*(volts3 -1); // Outra forma de calculo baseado na atenuacão e slope e intercept do datasheet
+  // measured dB values are: (V - V_Cal1) * slope_gradient + dB_Cal1
+      // ad8307_FdBm = (adc_ref * (fwd/4096.0) - R.cal_AD[0].Fwd) * delta_Fdb + R.cal_AD[0].db10m/10.0;
+      //  ad8307_RdBm = (adc_ref * (rev/4096.0) - R.cal_AD[0].Rev) * delta_Rdb + R.cal_AD[0].db10m/10.0;
+      ad8307_FdBm = (fwd - R.cal_AD2[0].Fwd) * delta_Fdb + R.cal_AD2[0].db10m/10.0;
+       ad8307_RdBm =  (rev - R.cal_AD2[0].Rev) * delta_Rdb + R.cal_AD2[0].db10m/10.0;
+}
+
+if(current_coupler==3)
+{
+  delta_db = (double)((R.cal_AD3[1].db10m - R.cal_AD3[0].db10m)/10.0);
+  delta_F = R.cal_AD3[1].Fwd - R.cal_AD3[0].Fwd;
+  delta_Fdb = delta_db/delta_F;
+  delta_R = R.cal_AD3[1].Rev - R.cal_AD3[0].Rev;
+  delta_Rdb = delta_db/delta_R;
+  //
+  PdBm =att_c3*(volts4 - 1);
+  PdBmRev=att_c3*(volts5 - 1); // Outra forma de calculo baseado na atenuacão e slope e intercept do datasheet
+  // measured dB values are: (V - V_Cal1) * slope_gradient + dB_Cal1
+      // ad8307_FdBm = (adc_ref * (fwd/4096.0) - R.cal_AD[0].Fwd) * delta_Fdb + R.cal_AD[0].db10m/10.0;
+      //  ad8307_RdBm = (adc_ref * (rev/4096.0) - R.cal_AD[0].Rev) * delta_Rdb + R.cal_AD[0].db10m/10.0;
+      ad8307_FdBm = (fwd - R.cal_AD3[0].Fwd) * delta_Fdb + R.cal_AD3[0].db10m/10.0;
+       ad8307_RdBm =  (rev - R.cal_AD3[0].Rev) * delta_Rdb + R.cal_AD3[0].db10m/10.0;
+}
+
+if(current_coupler==4)
+{
+  delta_db = (double)((R.cal_AD4[1].db10m - R.cal_AD4[0].db10m)/10.0);
+  delta_F = R.cal_AD4[1].Fwd - R.cal_AD4[0].Fwd;
+  delta_Fdb = delta_db/delta_F;
+  delta_R = R.cal_AD4[1].Rev - R.cal_AD4[0].Rev;
+  delta_Rdb = delta_db/delta_R;
+  //
+  PdBm =att_c4*(volts6 - 1); 
+  PdBmRev=att_c4*(volts7 - 1); // Outra forma de calculo baseado na atenuacão e slope e intercept do datasheet
+  // measured dB values are: (V - V_Cal1) * slope_gradient + dB_Cal1
+      // ad8307_FdBm = (adc_ref * (fwd/4096.0) - R.cal_AD[0].Fwd) * delta_Fdb + R.cal_AD[0].db10m/10.0;
+      //  ad8307_RdBm = (adc_ref * (rev/4096.0) - R.cal_AD[0].Rev) * delta_Rdb + R.cal_AD[0].db10m/10.0;
+      ad8307_FdBm = (fwd - R.cal_AD4[0].Fwd) * delta_Fdb + R.cal_AD4[0].db10m/10.0;
+       ad8307_RdBm =  (rev - R.cal_AD4[0].Rev) * delta_Rdb + R.cal_AD4[0].db10m/10.0;
+}
+if(current_coupler==5)
+{
+  delta_db = (double)((R.cal_AD[1].db10m - R.cal_AD[0].db10m)/10.0);
+  delta_F = R.cal_AD[1].Fwd - R.cal_AD[0].Fwd;
+  delta_Fdb = delta_db/delta_F;
+  delta_R = R.cal_AD[1].Rev - R.cal_AD[0].Rev;
+  delta_Rdb = delta_db/delta_R;
+  //
+  
+  // measured dB values are: (V - V_Cal1) * slope_gradient + dB_Cal1
+      // ad8307_FdBm = (adc_ref * (fwd/4096.0) - R.cal_AD[0].Fwd) * delta_Fdb + R.cal_AD[0].db10m/10.0;
+      //  ad8307_RdBm = (adc_ref * (rev/4096.0) - R.cal_AD[0].Rev) * delta_Rdb + R.cal_AD[0].db10m/10.0;
+      ad8307_FdBm = (fwd - R.cal_AD[0].Fwd) * delta_Fdb + R.cal_AD[0].db10m/10.0;
+       ad8307_RdBm =  (rev - R.cal_AD[0].Rev) * delta_Rdb + R.cal_AD[0].db10m/10.0;
+}
+
+Serial.print("PdBm = ");Serial.println(PdBm);
+Serial.print("PdBmREV = ");Serial.println(PdBmRev);
+// Y=mx+n
+  // ad8307_FdBm =0.025*volts0+MovIntercept;
+  //  ad8307_RdBm =MovIntercept*(volts1-1);
+
+  #if TESTE_IN 
+   Serial.print("PdBm = ");Serial.println(PdBm);
+   Serial.print("PdBmREV = ");Serial.println(PdBmRev);
+    Serial.print("  measur_incom= ");
+    Serial.print(measure.fwd[measure.incount]);
+    
+   Serial.print("  fwd= ");
+    Serial.print(fwd);
+
+    Serial.print("  dBm= ");
+    Serial.print(ad8307_FdBm);
+   
+
+    Serial.print("  RdBm= ");
+    Serial.print(ad8307_RdBm);
+
+    Serial.print("  mW= ");
+    Serial.print(power_mw);
+    
+    Serial.print("   RCalAD_fwd ");
+    Serial.print(R.cal_AD[0].Fwd);
+    Serial.print("   RCalAD1_fwd ");
+    Serial.print(R.cal_AD[1].Fwd);
+  
+    Serial.print("   deltaFdb ");
+    Serial.print(delta_Fdb);
+    Serial.print("   RCalAD_10dbm(0) ");
+    Serial.print(R.cal_AD[0].db10m);
+    Serial.print("   RCalAD_AD10dbm(1) ");
+    Serial.print(R.cal_AD[1].db10m);
+    Serial.print("   delta_db ");
+    Serial.println(delta_db);
+
+   #endif
+  // Test for direction of power - Always designate the higher power as "forward"
+  // while setting the "Reverse" flag on reverse condition.
+
+  if (ad8307_FdBm > ad8307_RdBm)        // Forward direction
+  {
+    Reverse = false;
+  }
+  else                                  // Reverse direction
+  {
+    temp = ad8307_RdBm;
+    ad8307_RdBm = ad8307_FdBm;
+    ad8307_FdBm = temp;
+    Reverse = true;
+  }
+}
+
 
 //-----------------------------------------------------------------------------------------
 //                Prepare various types of power and calculate SWR
@@ -191,139 +348,6 @@ void calc_SWR_and_power(void)
 
 
 //
-//-----------------------------------------------------------------------------------------
-//                Convert Voltage Reading into Power when using AD8307
-//-----------------------------------------------------------------------------------------
-//
-void pswr_determine_dBm(void)
-{
-  double  delta_db;
-  double  delta_F, delta_R;
-  double  delta_Fdb, delta_Rdb;
-  double  temp;
-
-  // Calculate the slope gradient between the two calibration points:
-  //
-  // (dB_Cal1 - dB_Cal2)/(V_Cal1 - V_Cal2) = slope_gradient
-  //
- 
-if(current_coupler==1)
-{
-  delta_db = (double)((R.cal_AD[1].db10m - R.cal_AD[0].db10m)/10.0);
-  delta_F = R.cal_AD[1].Fwd - R.cal_AD[0].Fwd;
-  delta_Fdb = delta_db/delta_F;
-  delta_R = R.cal_AD[1].Rev - R.cal_AD[0].Rev;
-  delta_Rdb = delta_db/delta_R;
-  //
-  
-  // measured dB values are: (V - V_Cal1) * slope_gradient + dB_Cal1
-      // ad8307_FdBm = (adc_ref * (fwd/4096.0) - R.cal_AD[0].Fwd) * delta_Fdb + R.cal_AD[0].db10m/10.0;
-      //  ad8307_RdBm = (adc_ref * (rev/4096.0) - R.cal_AD[0].Rev) * delta_Rdb + R.cal_AD[0].db10m/10.0;
-      ad8307_FdBm = (fwd - R.cal_AD[0].Fwd) * delta_Fdb + R.cal_AD[0].db10m/10.0;
-       ad8307_RdBm =  (rev - R.cal_AD[0].Rev) * delta_Rdb + R.cal_AD[0].db10m/10.0;
-}
-if(current_coupler==2)
-{
-  delta_db = (double)((R.cal_AD2[1].db10m - R.cal_AD2[0].db10m)/10.0);
-  delta_F = R.cal_AD2[1].Fwd - R.cal_AD2[0].Fwd;
-  delta_Fdb = delta_db/delta_F;
-  delta_R = R.cal_AD2[1].Rev - R.cal_AD2[0].Rev;
-  delta_Rdb = delta_db/delta_R;
-  //
-  
-  // measured dB values are: (V - V_Cal1) * slope_gradient + dB_Cal1
-      // ad8307_FdBm = (adc_ref * (fwd/4096.0) - R.cal_AD[0].Fwd) * delta_Fdb + R.cal_AD[0].db10m/10.0;
-      //  ad8307_RdBm = (adc_ref * (rev/4096.0) - R.cal_AD[0].Rev) * delta_Rdb + R.cal_AD[0].db10m/10.0;
-      ad8307_FdBm = (fwd - R.cal_AD2[0].Fwd) * delta_Fdb + R.cal_AD2[0].db10m/10.0;
-       ad8307_RdBm =  (rev - R.cal_AD2[0].Rev) * delta_Rdb + R.cal_AD2[0].db10m/10.0;
-}
-
-if(current_coupler==3)
-{
-  delta_db = (double)((R.cal_AD3[1].db10m - R.cal_AD3[0].db10m)/10.0);
-  delta_F = R.cal_AD3[1].Fwd - R.cal_AD3[0].Fwd;
-  delta_Fdb = delta_db/delta_F;
-  delta_R = R.cal_AD3[1].Rev - R.cal_AD3[0].Rev;
-  delta_Rdb = delta_db/delta_R;
-  //
-  
-  // measured dB values are: (V - V_Cal1) * slope_gradient + dB_Cal1
-      // ad8307_FdBm = (adc_ref * (fwd/4096.0) - R.cal_AD[0].Fwd) * delta_Fdb + R.cal_AD[0].db10m/10.0;
-      //  ad8307_RdBm = (adc_ref * (rev/4096.0) - R.cal_AD[0].Rev) * delta_Rdb + R.cal_AD[0].db10m/10.0;
-      ad8307_FdBm = (fwd - R.cal_AD3[0].Fwd) * delta_Fdb + R.cal_AD3[0].db10m/10.0;
-       ad8307_RdBm =  (rev - R.cal_AD3[0].Rev) * delta_Rdb + R.cal_AD3[0].db10m/10.0;
-}
-
-if(current_coupler==4)
-{
-  delta_db = (double)((R.cal_AD4[1].db10m - R.cal_AD4[0].db10m)/10.0);
-  delta_F = R.cal_AD4[1].Fwd - R.cal_AD4[0].Fwd;
-  delta_Fdb = delta_db/delta_F;
-  delta_R = R.cal_AD4[1].Rev - R.cal_AD4[0].Rev;
-  delta_Rdb = delta_db/delta_R;
-  //
-  
-  // measured dB values are: (V - V_Cal1) * slope_gradient + dB_Cal1
-      // ad8307_FdBm = (adc_ref * (fwd/4096.0) - R.cal_AD[0].Fwd) * delta_Fdb + R.cal_AD[0].db10m/10.0;
-      //  ad8307_RdBm = (adc_ref * (rev/4096.0) - R.cal_AD[0].Rev) * delta_Rdb + R.cal_AD[0].db10m/10.0;
-      ad8307_FdBm = (fwd - R.cal_AD4[0].Fwd) * delta_Fdb + R.cal_AD4[0].db10m/10.0;
-       ad8307_RdBm =  (rev - R.cal_AD4[0].Rev) * delta_Rdb + R.cal_AD4[0].db10m/10.0;
-}
-
-
-// Y=mx+n
-  // ad8307_FdBm =0.025*volts0+MovIntercept;
-  //  ad8307_RdBm =MovIntercept*(volts1-1);
-
-  #if TESTE_IN 
-  
-    Serial.print("  measur_incom= ");
-    Serial.print(measure.fwd[measure.incount]);
-    
-   Serial.print("  fwd= ");
-    Serial.print(fwd);
-
-    Serial.print("  dBm= ");
-    Serial.print(ad8307_FdBm);
-   
-
-    Serial.print("  RdBm= ");
-    Serial.print(ad8307_RdBm);
-
-    Serial.print("  mW= ");
-    Serial.print(power_mw);
-    
-    Serial.print("   RCalAD_fwd ");
-    Serial.print(R.cal_AD[0].Fwd);
-    Serial.print("   RCalAD1_fwd ");
-    Serial.print(R.cal_AD[1].Fwd);
-  
-    Serial.print("   deltaFdb ");
-    Serial.print(delta_Fdb);
-    Serial.print("   RCalAD_10dbm(0) ");
-    Serial.print(R.cal_AD[0].db10m);
-    Serial.print("   RCalAD_AD10dbm(1) ");
-    Serial.print(R.cal_AD[1].db10m);
-    Serial.print("   delta_db ");
-    Serial.println(delta_db);
-
-   #endif
-  // Test for direction of power - Always designate the higher power as "forward"
-  // while setting the "Reverse" flag on reverse condition.
-
-  if (ad8307_FdBm > ad8307_RdBm)        // Forward direction
-  {
-    Reverse = false;
-  }
-  else                                  // Reverse direction
-  {
-    temp = ad8307_RdBm;
-    ad8307_RdBm = ad8307_FdBm;
-    ad8307_FdBm = temp;
-    Reverse = true;
-  }
-}
-
 
 //
 //-----------------------------------------------------------------------------------------
@@ -390,30 +414,28 @@ void determine_power_pep_pk(void)
   // Instantaneous forward voltage and power, milliwatts and dBm
   f_inst = pow(10,ad8307_FdBm/20.0);		        // (We use voltage later on, for SWR calc)
 
-
-
-
-  fwd_power_mw = SQR(f_inst);		
-
-  	#if TESTE
-    Serial.print(" mW: ");
-    Serial.println(fwd_power_mw);
-   #endif 
+  fwd_power_mw = SQR(f_inst);		// P_mw = (V*V) (current and resistance have already been factored in)
+     
   
-                // P_mw = (V*V) (current and resistance have already been factored in)
+                
 
   // Instantaneous reverse voltage and power
   r_inst = pow(10,(ad8307_RdBm)/20.0);
   ref_power_mw = SQR(r_inst);
 
-
+  
 
 
   // We need some sane boundaries (4kW) to determine reasonable variable defs for further calculations
   if (fwd_power_mw > 4000000) fwd_power_mw = 4000000;
   if (ref_power_mw > 4000000) ref_power_mw = 4000000;
-  
+  if( fwd_power_mw < MIN_PWR_FOR_SWR_CALC){fwd_power_mw=0;}
+  if( ref_power_mw < MIN_PWR_FOR_SWR_CALC){ref_power_mw=0;}
   // Instantaneous Real Power Output
+
+  fwd_power_w=fwd_power_mw/1000;
+  ref_power_w=ref_power_mw/1000;
+  
   power_mw = fwd_power_mw - ref_power_mw;
   power_db = 10 * log10(power_mw);  
 

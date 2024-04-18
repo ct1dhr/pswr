@@ -1,3 +1,5 @@
+/*
+
 void factory_menu(void)
 {
 
@@ -289,3 +291,4 @@ void calibrate_menu(void)
       nex.writeStr("msg.txt","Nada alterado");
     }
 #endif
+*/

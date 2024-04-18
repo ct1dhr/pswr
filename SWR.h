@@ -17,7 +17,7 @@ int16_t highdbm;
 float voltHdbn;
 int16_t lowdbm;
 float voltLdbm;
-
+int att;
 
 };
 
@@ -59,7 +59,8 @@ float voltLdbm;
 //#define WIRE_ENABLED              0 // 1 to enable, 0 to disable
 #define TESTE                      0  // se 1 imprime algus valores para teste
 #define TESTE2                      0
-#define TESTE_IN                     1
+#define TESTE_IN                     0
+
 
 #define LOOP_TIME 1000
 
@@ -485,8 +486,15 @@ typedef struct {                              // Touch screen push states
 #ifndef mVtoV
 #define mVtoV(x)((x)/(10000))
 #endif
-
-
+#ifndef dBmC
+#define dBmC(x)((x)*(10))
+#endif
+#ifndef CdBm
+#define CdBm(x)((x)/(10))
+#endif
+#ifndef mWtoW
+#define mWtoW(x)((x)/(10000))
+#endif
 //-----------------------------------------------------------------------------
 // Soft Reset
 
