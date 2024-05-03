@@ -86,6 +86,9 @@ void onePointCal(int16_t db, double volts)
 
 SecondPointdB=db-300;
 SecondPointVolt=volts-LOGAMP1_SLOPE * .001 * 30;
+SecondPointdB1=db-300;
+SecondPointVolt1=volts-LOGAMP1_SLOPE * .001 * 30;
+
  
 }
 int inteiro(double n){return floor(n);}
@@ -99,4 +102,38 @@ return n-floor(n);
 double powerRatio(int16_t dB){
 
 return pow(10,(dB/10));
+}
+
+bool wifi_connect(){
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+  while (WiFi.waitForConnectResult() != WL_CONNECTED) {
+    Serial.println("Connection Failed! Rebooting...");
+    delay(5000);
+    ESP.restart();
+  }
+  return true;
+ } 
+
+ int readADC_Avg(int FILTER_LEN )
+{
+
+  
+  int AN_Pot1_Buffer[FILTER_LEN]; 
+  Sum=0;
+ int j=0;
+  
+  for(iconut=0; iconut<FILTER_LEN; iconut++)
+  {
+
+    float vout = analogReadMilliVolts(analogPin);
+    AN_Pot1_Buffer[iconut] = vout;
+    
+ 
+  }
+for(j=0; j<FILTER_LEN; j++){
+Sum = Sum + AN_Pot1_Buffer[j];
+}
+  return (Sum/FILTER_LEN);
+ 
 }

@@ -1,5 +1,5 @@
 /*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                      PSWR Version 1.03.01
+                      PSWR Version 1.03.04
                 Platform Esp32 with Nextion Display
                           CT1DHR
 
@@ -29,7 +29,9 @@
 #include <ESPmDNS.h>
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
-
+#if NTP
+#include <NTPClient.h>
+#endif
 
 
 
@@ -142,11 +144,19 @@ volatile bool X_LedState;   // BOOL: Debug LED
 uint8_t     mode_band = 0;   // Band mode active
 int         cur_band = 1;   // Band mode active
 unsigned long refresh_timer = millis(); 
+int mode =0;
 //-
 int led = 2;
 int16_t att_c0, att_c1,att_c2,att_c3,att_c4 =0 ;
 String coupler_name[4];
 boolean testMode= false;
+const int analogPin = 34;
+float VoltPSU;
+int voltPSUint;
+int voltPSUfrac;
+int r1= 33000;
+int r2= 6760;
+
 // Variables in ram/flash rom (default)
 var_t  R  = {
 { // Coupler 1 Meter calibration for HF    1
@@ -248,7 +258,7 @@ bool leitura_c2 = false;
 bool leitura_c3 = false;
 bool leitura_c4 = false;
 bool flag1= false;
-
+bool fwifi= false;
  int led2 =2;
  int current_coupler = 1;
 #if PUSHBUTTON_ENABLED
@@ -296,23 +306,37 @@ int fsc;
    // page 0
         String text1,text2 ;
         // sensor 1 page 2
-        int16_t dbm1_s1,dbm1_s2,dbm1_s3,dbm1_s4,dbm1_s5;
-        int16_t dbm2_s1,dbm2_s2,dbm2_s3,dbm2_s4 ,dbm2_s5;
+        float dbm1_s1,dbm1_s2,dbm1_s3,dbm1_s4,dbm1_s5;
+        float dbm2_s1,dbm2_s2,dbm2_s3,dbm2_s4 ,dbm2_s5;
         double volt1_s1,volt1_s2,volt1_s3,volt1_s4,volt1_s5;
         double volt2_s1,volt2_s2,volt2_s3,volt2_s4,volt2_s5;
         int16_t att_s1,att_s2,att_s3,att_s4,att_s5;
         int16_t att_cal;
-        int16_t SecondPointdB;
-        double SecondPointVolt;
+        float SecondPointdB,SecondPointdB1;
+        double SecondPointVolt,SecondPointVolt1;
         bool newPageLoaded = false; 
+        int iconut = 0;
+        int Sum = 0;
+        int AN_i = 0;
     //  page 1
 
 String  endChar = String(char(0xff)) + String(char(0xff)) + String(char(0xff));
+unsigned long millisTempozzz = millis();
+unsigned long millisT= millis();
+int periodo1=2000;
+int tsz=60;  // numero de segundos antes de ir para screen saveer
+unsigned long tzz=tsz*1000;
+  
+// para date and time
+#if NTP
+WiFiUDP ntpUDP;
+ NTPClient timeClient(ntpUDP, "europe.pool.ntp.org", 3600, 60000); 
+#endif
+String formattedDate;
+String dayStamp;
+String timeStamp;
 
-    // page 2
 
-
-    //page 3
    // ---fim das variaveis nextion
 
 #define Fnex 100  // duas casas decimais para xfloat do nextion
@@ -322,15 +346,9 @@ String  endChar = String(char(0xff)) + String(char(0xff)) + String(char(0xff));
 
 void setup() {
 Serial.begin(115200);
+analogReadResolution(12);
 #if WIFI
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-  while (WiFi.waitForConnectResult() != WL_CONNECTED) {
-    Serial.println("Connection Failed! Rebooting...");
-    delay(5000);
-    ESP.restart();
-  }
-
+wifi_connect();
   ArduinoOTA
     .onStart([]() {
       String type;
@@ -358,6 +376,13 @@ Serial.begin(115200);
     });
 
   ArduinoOTA.begin();
+  Serial.println("Ready");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+  
+#endif
+#if NTP
+timeClient.begin();
 #endif
   Serial.println("Ready");
   Serial.print("IP address: ");
@@ -388,7 +413,7 @@ Serial.begin(115200);
   
           
    readConfig(config_filename);
-
+ Serial.print("-----------------"); Serial.println(password_from_display);
   pinMode(led, OUTPUT);
 
   #if NEXTION
@@ -427,7 +452,7 @@ Serial2.begin(115200);
    #endif
 #endif
  
-
+Serial2.print("page 12");Serial2.print(endChar);
 
 
 
@@ -438,6 +463,23 @@ Serial2.begin(115200);
 ///////////////////////////////////////////////////////////////////
 
 void loop() {
+if(WL_CONNECTED){fwifi=true;}else{fwifi=false;}
+Serial.print("pagina corrente : ");
+Serial.println(nex.currentPageId);
+//VoltPSU = analogRead(analogPin);
+ // float vout = analogReadMilliVolts(analogPin);
+  float mVpsu = readADC_Avg(200);
+  
+  VoltPSU =mVpsu/r2*(r1+r2);
+   Serial.print("PSU mV :");Serial.println(mVpsu);
+  
+ int  Int_volt =int(VoltPSU/1000*Fnex);
+ Serial.print("PSU mV :");Serial.println(Int_volt);
+ //int voltPSU = readADC_Avg(Int_volt, 200);
+
+   voltPSUfrac = frac(VoltPSU);
+    voltPSUint = inteiro(VoltPSU);
+
 #if WIFI
 ArduinoOTA.handle();
 #endif
@@ -453,7 +495,61 @@ ArduinoOTA.handle();
             
         }
 #endif
+if((millis() - millisTempozzz) > tzz){
+   if(fwd_power_mw <= 0 and !flag1){
+    Serial2.print("page 11");Serial2.print(endChar);
+    }
 
+   flag1=true;
+    millisTempozzz = millis();
+
+
+  }
+//-------------pagina screen saver----------------
+  if(nex.currentPageId==11){
+int pgenumber = nex.lastCurrentPageId;
+
+Serial.print("last page :");Serial.println(pgenumber);
+   if(fwd_power_mw > 1 and flag1){
+    
+    
+    Serial2.print("page 12");Serial2.print(endChar);
+    flag1=false;
+     millisTempozzz = millis();
+
+     
+        
+
+      } // fim pagina  ss
+      
+      if((millis() - millisT) > periodo1){
+        Serial2.print("xpsu.val=");
+         Serial2.print(Int_volt);
+         Serial2.print(endChar);
+         millisT=millis();
+      } 
+    
+
+  #if NTP
+     while(!timeClient.update()) {
+        timeClient.forceUpdate();
+       }
+      
+         formattedDate = timeClient.getFormattedTime();
+         int splitT = formattedDate.indexOf("T");
+         dayStamp = formattedDate.substring(0, splitT);
+         timeStamp = formattedDate.substring(splitT+1, formattedDate.length()-1);
+         Serial2.print("data.txt=");
+         Serial2.print(dayStamp);
+         Serial2.print(endChar);
+         Serial2.print("hora.txt=");
+         Serial2.print(timeStamp);
+         Serial2.print(endChar);
+   #endif
+     
+ }
+
+  
   adc_poll_and_feed_circular();
   pswr_sync_from_interrupt(); 
     pswr_determine_dBm();            // Read and process circular buffers containing adc input,
@@ -462,14 +558,8 @@ ArduinoOTA.handle();
 
  SendNextionFwd();
   SendNextionRev();
+   
   
-  if(fwd_power_mw <= 0 and !flag1){
-    Serial2.print("page 11");Serial2.print(endChar);
-    flag1=true;
-    
-    }
-
-    
   //Serial.print("recebido do nextion : ");
  // Serial.println(volt1_s1);
   //receive_att();

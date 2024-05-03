@@ -12,8 +12,9 @@ bool readConfig(String file_name) {
   auto error = deserializeJson(doc, file_content);
   if ( error ) { 
     Serial.println("Error interpreting calib file");
-    return false;
+     return false;
   }
+    
 //***********************************************
   const String ssid1 = doc["ssid"];
   const String pass1 = doc["pass"];
@@ -30,8 +31,8 @@ bool readConfig(String file_name) {
  ssid_from_display = ssid1;
  password_from_display = pass1;
           current_coupler =doc["cpl"];
-  const int16_t  dbmHigh = doc["dbmHigh"];
-  const int16_t   dbmLow = doc["dbmLow"];
+  const float  dbmHigh = doc["dbmHigh"];
+  const float   dbmLow = doc["dbmLow"];
   const double     fwd_h = doc["fwd_h"];
   const double     fwd_l = doc["fwd_l"];
   const int   att        = doc["att"];
@@ -47,8 +48,8 @@ bool readConfig(String file_name) {
           R.cal_AD[1].Rev   =  fwd_l; 
 //---------------------------------------------
 
-  const int16_t  dbmHigh1 = doc["dbmHigh1"];
-  const int16_t  dbmLow1 =  doc["dbmLow1"];
+  const float  dbmHigh1 = doc["dbmHigh1"];
+  const float  dbmLow1 =  doc["dbmLow1"];
   const double   fwd_h1 =   doc["fwd_h1"];
   const double   fwd_l1 =   doc["fwd_l1"];
   const int      att1 =     doc["att1"];
@@ -64,8 +65,8 @@ bool readConfig(String file_name) {
 //---------------------------------------------
 
 
-  const int16_t  dbmHigh2 = doc["dbmHigh2"];
-  const int16_t  dbmLow2 =  doc["dbmLow2"];
+  const float  dbmHigh2 = doc["dbmHigh2"];
+  const float  dbmLow2 =  doc["dbmLow2"];
   const double   fwd_h2 =   doc["fwd_h2"];
   const double   fwd_l2 =   doc["fwd_l2"];
    const int     att2 =     doc["att2"];
@@ -79,8 +80,8 @@ bool readConfig(String file_name) {
           R.cal_AD2[1].Fwd   =  fwd_l2;
           R.cal_AD2[1].Rev   =  fwd_l2; 
 //---------------------------------------------
-       const int16_t  dbmHigh3 = doc["dbmHigh3"];
-       const int16_t  dbmLow3 =  doc["dbmLow3"];
+       const float  dbmHigh3 = doc["dbmHigh3"];
+       const float  dbmLow3 =  doc["dbmLow3"];
        const double   fwd_h3 =   doc["fwd_h3"];
        const double   fwd_l3 =   doc["fwd_l3"];
        const int   att3 =        doc["att3"];
@@ -95,8 +96,8 @@ bool readConfig(String file_name) {
           R.cal_AD3[1].Rev   =  fwd_l3; 
 //-----------------------------------------------
 
-  const int16_t  dbmHigh4 = doc["dbmHigh4"];
-  const int16_t  dbmLow4 =  doc["dbmLow4"];
+  const float  dbmHigh4 = doc["dbmHigh4"];
+  const float  dbmLow4 =  doc["dbmLow4"];
   const double   fwd_h4 =   doc["fwd_h4"];
   const double   fwd_l4 =   doc["fwd_l4"];
   const int      att4 =     doc["att4"];

@@ -24,3 +24,12 @@
  Initial version.: 0.50, 2013-09-29  Loftur Jonasson, TF3LJ / VE2LJX
                    (beta version)
 
+_________________________________________________________________________
+
+This version: 
+
+
+                     PSWR Version 1.03.04
+                Platform Esp32 with Nextion Display
+                            CT1DHR
+                        May 03 - 2024

@@ -25,8 +25,9 @@ int att;
 
 
 //#define WIFI 1  // se com wiff
-#define WIFI 0   // sem wifi
+#define WIFI 0   //0 sem wifi
 
+#define NTP 0  // data hora se wifi
 
 
 
@@ -378,7 +379,7 @@ typedef struct {
                }  adbuffer_t;
                
 typedef struct {
-          int16_t  db10m;                     // Calibrate, value in dBm x 10
+          float  db10m;                     // Calibrate, value in dBm x 10
           double   Fwd;                       // corresponding AD8307 forward output value, V * 10000
           double   Rev;                       // corresponding AD8307 reverse output value, V * 10000
                }  cal_t;

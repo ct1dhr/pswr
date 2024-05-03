@@ -149,10 +149,10 @@ int ppk=power_mw_pk*10/1000;
         int att1 = att_c1*Fnex;
        int16_t dbm10a=CdBm(R.cal_AD1[0].db10m)*Fnex;
        int16_t dbm10b=CdBm(R.cal_AD1[1].db10m)*Fnex;
-       double fwdx1=mVtoV(R.cal_AD1[0].Fwd)*Fnex;
-       double fwdx2=mVtoV(R.cal_AD1[1].Fwd)*Fnex;
+       double fwdx1=mVtoV(R.cal_AD1[0].Fwd)*Fnex*10;
+       double fwdx2=mVtoV(R.cal_AD1[1].Fwd)*Fnex*10;
        
-       Serial.print(dbm10a);Serial.print(";");
+      
        
          nex.writeNum("x1.val",att1);  // valor de calibração * Fnex(100 para duas casas decimais)
          nex.writeNum("x1.val",att1);
@@ -169,14 +169,16 @@ int ppk=power_mw_pk*10/1000;
          nex.writeNum("x8.val",fwdx2);
          nex.writeNum("x8.val",fwdx2);
           
-        nex.writeNum("x10.val",volts0*Fnex);
-        nex.writeNum("x10.val",volts0*Fnex);
+        nex.writeNum("x10.val",volts0*Fnex*10);
+        nex.writeNum("x10.val",volts0*Fnex*10);
        
-        nex.writeNum("x11.val",volts1*Fnex);
-        nex.writeNum("x11.val",volts1*Fnex);
-         
-
-         
+        nex.writeNum("x11.val",volts1*Fnex*10);
+        nex.writeNum("x11.val",volts1*Fnex*10);
+         onePointCal(R.cal_AD2[0].db10m, R.cal_AD2[0].Fwd);
+          nex.writeNum("x30v.val",mVtoV(SecondPointVolt)*Fnex*10);
+         nex.writeNum("x30v.val",mVtoV(SecondPointVolt)*Fnex*10);
+         nex.writeNum("x30db.val",SecondPointdB/10*Fnex);
+         nex.writeNum("x30db.val",SecondPointdB/10*Fnex);
 
     }//refresh page2
 
@@ -193,8 +195,8 @@ int ppk=power_mw_pk*10/1000;
        int att2 = att_c2*Fnex;
        int16_t dbm10a=CdBm(R.cal_AD2[0].db10m)*Fnex;
        int16_t dbm10b=CdBm(R.cal_AD2[1].db10m)*Fnex;
-       double fwdx1=mVtoV(R.cal_AD2[0].Fwd)*Fnex;
-       double fwdx2=mVtoV(R.cal_AD2[1].Fwd)*Fnex;
+       double fwdx1=mVtoV(R.cal_AD2[0].Fwd)*Fnex*10;
+       double fwdx2=mVtoV(R.cal_AD2[1].Fwd)*Fnex*10;
        
        Serial.print(dbm10a);Serial.print(";");
        
@@ -213,16 +215,17 @@ int ppk=power_mw_pk*10/1000;
          nex.writeNum("x8.val",fwdx2);
          nex.writeNum("x8.val",fwdx2);
           
-        nex.writeNum("x10.val",volts2*Fnex);
-        nex.writeNum("x10.val",volts2*Fnex);
-        nex.writeNum("x11.val",volts3*Fnex);
-        nex.writeNum("x11.val",volts3*Fnex);
+        nex.writeNum("x10.val",volts2*Fnex*10);
+        nex.writeNum("x10.val",volts2*Fnex*10);
+        nex.writeNum("x11.val",volts3*Fnex*10);
+        nex.writeNum("x11.val",volts3*Fnex*10);
          onePointCal(R.cal_AD2[0].db10m, R.cal_AD2[0].Fwd);
-        nex.writeNum("x30db.val",SecondPointdB/10*Fnex);
-         nex.writeNum("x30db.val",SecondPointdB/10*Fnex);
-
-        nex.writeNum("x30v.val",mVtoV(SecondPointVolt)*Fnex);
-         nex.writeNum("x30v.val",mVtoV(SecondPointVolt)*Fnex);
+        nex.writeNum("x30db.val",SecondPointdB1/10*Fnex);
+         nex.writeNum("x30db.val",SecondPointdB1/10*Fnex);
+         nex.writeNum("x30v.val",mVtoV(SecondPointVolt1)*Fnex*10);
+         nex.writeNum("x30v.val",mVtoV(SecondPointVolt1)*Fnex*10);
+        
+         
 
 //___________________________
     }// fim refreshPage3
@@ -239,8 +242,8 @@ int ppk=power_mw_pk*10/1000;
        int att3 = att_c3*Fnex;
        int16_t dbm10a=CdBm(R.cal_AD3[0].db10m)*Fnex;
        int16_t dbm10b=CdBm(R.cal_AD3[1].db10m)*Fnex;
-       double fwdx1=mVtoV(R.cal_AD3[0].Fwd)*Fnex;
-       double fwdx2=mVtoV(R.cal_AD3[1].Fwd)*Fnex;
+       double fwdx1=mVtoV(R.cal_AD3[0].Fwd)*Fnex*10;
+       double fwdx2=mVtoV(R.cal_AD3[1].Fwd)*Fnex*10;
        
        Serial.print(dbm10a);Serial.print(";");
        
@@ -259,7 +262,7 @@ int ppk=power_mw_pk*10/1000;
          nex.writeNum("x8.val",fwdx2);
          nex.writeNum("x8.val",fwdx2);
           
-        nex.writeNum("x10.val",volts0*Fnex);
+        nex.writeNum("x10.val",volts0*Fnex*10);
        // nex.writeNum("x1.val0",volts0*100);ts0*100);
 
          
@@ -280,8 +283,8 @@ int ppk=power_mw_pk*10/1000;
        int att4 = att_c4*Fnex;
        int16_t dbm10a=CdBm(R.cal_AD4[0].db10m)*Fnex;
        int16_t dbm10b=CdBm(R.cal_AD4[1].db10m)*Fnex;
-       double fwdx1=mVtoV(R.cal_AD4[0].Fwd)*Fnex;
-       double fwdx2=mVtoV(R.cal_AD4[1].Fwd)*Fnex;
+       double fwdx1=mVtoV(R.cal_AD4[0].Fwd)*Fnex*10;
+       double fwdx2=mVtoV(R.cal_AD4[1].Fwd)*Fnex*10;
        
        Serial.print(dbm10a);Serial.print(";");
        
@@ -300,7 +303,7 @@ int ppk=power_mw_pk*10/1000;
          nex.writeNum("x8.val",fwdx2);
          nex.writeNum("x8.val",fwdx2);
           
-        nex.writeNum("x10.val",volts0*Fnex);
+        nex.writeNum("x10.val",volts0*Fnex*10);
        // nex.writeNum("x1.val0",volts0*100);
          
 
@@ -341,21 +344,42 @@ int ppk=power_mw_pk*10/1000;
 
 void refreshPage10() // wifi
     {
+
+      if(fwifi){nex.writeNum("t5.bco",20256);}else{nex.writeNum("t5.bco",65535);}
         nex.writeStr("tlk.txt",String(linkOTA));
+nex.writeStr("ssid.txt",ssid_from_display);
+nex.writeStr("pass.txt",password_from_display);
+
+
     }// fim refreshPage10
 
 
 /*__________________________________________________________________
-                   P A  G E 10
+                   P A  G E 11
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 
 void refreshPage11() // saver
     {
-
-
+   
+   millisTempozzz=millis();
   int ppk=power_mw_pk;
-    
-    
+     nex.writeNum("va1.val=",nex.lastCurrentPageId);
+   
       nex.writeNum("x0.val=",ppk);
-      if(ppk>0){Serial2.print("page 0");Serial2.print(endChar);}
+ 
+if(fwd_power_mw > 0) {
+   // Serial2.print("page 0");Serial2.print(endChar);
+
+    Serial2.print(nex.lastCurrentPageId);Serial2.print(endChar);
+   }
+
+      
     }
+
+/*__________________________________________________________________
+                   P A  G E 11
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+void refreshPage12(){
+
+
+}

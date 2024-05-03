@@ -2,6 +2,29 @@ void SendNextionFwd(){
 String  endChar = String(char(0xff)) + String(char(0xff)) + String(char(0xff));
  // digitalWrite(led,!(digitalRead(led)));
 int32_t valw=fwd_power_mw;
+int valw_avgNex=power_mw_avg*100;
+switch(mode){
+                  case 0:
+                    valw=fwd_power_mw;
+                    break;
+                  
+                  case 1:
+                    valw_avgNex=power_mw_pep*100;
+                    break;
+                  case 2:
+                    valw_avgNex=power_mw_avg*100;
+                    break;
+                  case 3:
+                    valw_avgNex=power_mw_1savg*100;
+                    break;
+                  case 4:
+                    valw_avgNex=power_mw_pk*100;
+                    break;
+                  case 5:
+                    valw_avgNex=power_mw*100;
+                    break;
+             }
+
 int32_t wpp;
  //  double mw=pow(10,(ad8307_FdBm/10.0));
 int32_t gwatts;
@@ -14,10 +37,18 @@ int32_t gwp;
   float mW_val = mw/1;
   float nW_val = mw*1000;
   int fc=100;      // Fundo de escala do grafico de barras
- 
+   int Fmw_nexAVG;
+   int gwattsAVG;
   int Fmw_nex=int(mw*100); // vezes 100 para apresentar duas casas decimais
   double Rmw_nex=ref_power_mw;
- 
+/*
+      power_mw;       // Calculated power in mW
+      power_mw_pk;    // Calculated 100ms peak power in mW
+      power_mw_pep;   // Calculated PEP power in mW (1s, 2.5s or 5s)
+      power_mw_long;  // Calculated MAX power in mW, 30 sec or longer window
+      power_mw_avg;   // Calculated AVG power in mW, 100ms
+      power_mw_1savg; // Calculated AVG power in mW, 1 second
+ */
 Serial.print("escala --> ");Serial.println(escala());
 #if !NEXTION
 // ---------escala de Kw------
@@ -27,6 +58,7 @@ fc=2000;
 Serial2.print("u1.txt=\"Kw\"" + endChar);
 // escala do g. barras
 Fmw_nex=mw/1000000+0.1;
+Fmw_nexAVG=valw_avgNex/1000000+0.1;
 Serial2.print("fsf.txt=\"2K\"" + endChar);
 Serial2.print("fs2.txt=\"1.5K\"" + endChar);
 Serial2.print("fsm.txt=\"1K\"" + endChar);
@@ -45,12 +77,26 @@ Serial2.print(endChar);
 Serial2.print("Gw.val=");
 Serial2.print(gwatts);
 Serial2.print(endChar);
+
+
+
 wpp=power_mw_pk/1000000;
 gwp=map(wpp,0,fc,0,100);
  Serial2.print("Gwp.val=");
 
 Serial2.print(gwp);
 Serial2.print(endChar);
+//if(nex.currentPageId==12){
+//page 12
+Serial2.print("xavg.val=");
+Serial2.print(Fmw_nexAVG);
+Serial2.print(endChar);
+gwattsAVG=map(Fmw_nexAVG/Fnex,0,fc,0,100);
+Serial2.print("Gavg.val=");
+Serial2.print(gwattsAVG);
+Serial2.print(endChar);
+
+// end page 12
 
 
 }
@@ -66,7 +112,7 @@ Serial2.print("fsm.txt=\"500\"" + endChar);
 Serial2.print("fs1.txt=\"250\"" + endChar);
 
 
-
+Fmw_nexAVG=valw_avgNex/1000000+0.1;
 valw=fwd_power_mw/1000000*Fnex;
 Serial2.print("u1.txt=\"Kw\"" + endChar);
 Serial2.print("Cw.val=");
@@ -97,7 +143,7 @@ Serial2.print("fsf.txt=\"500\"" + endChar);
 Serial2.print("fs2.txt=\"375\"" + endChar);
 Serial2.print("fsm.txt=\"250\"" + endChar);
 Serial2.print("fs1.txt=\"125\"" + endChar);
-
+Fmw_nexAVG=valw_avgNex/1000+0.1;
 valw=fwd_power_mw/1000*Fnex;
 Serial2.print("u1.txt=\"W\"" + endChar);
 Serial2.print("Cw.val=");
@@ -116,6 +162,18 @@ gwp=map(wpp,0,fc,0,100);
 
 Serial2.print(gwp);
 Serial2.print(endChar);
+
+//if(nex.currentPageId==12){
+//page 12
+Serial2.print("xavg.val=");
+Serial2.print(Fmw_nexAVG);
+Serial2.print(endChar);
+gwattsAVG=map(Fmw_nexAVG/Fnex,0,fc,0,100);
+Serial2.print("Gavg.val=");
+Serial2.print(gwattsAVG);
+Serial2.print(endChar);
+
+
 }
 
 if(escala()==4 ){ // 50w a 100w
@@ -124,7 +182,7 @@ Serial2.print("fsf.txt=\"100\"" + endChar);
 Serial2.print("fs2.txt=\"87\"" + endChar);
 Serial2.print("fsm.txt=\"75\"" + endChar);
 Serial2.print("fs1.txt=\"62\"" + endChar);
-
+Fmw_nexAVG=valw_avgNex/1000+0.1;
 valw=fwd_power_mw/1000*Fnex;
 Serial2.print("u1.txt=\"W\"" + endChar);
 Serial2.print("Cw.val=");
@@ -144,6 +202,17 @@ gwp=map(wpp,0,fc,0,100);
 
 Serial2.print(gwp);
 Serial2.print(endChar);
+
+//if(nex.currentPageId==12){
+//page 12
+Serial2.print("xavg.val=");
+Serial2.print(Fmw_nexAVG);
+Serial2.print(endChar);
+gwattsAVG=map(Fmw_nexAVG/Fnex,0,fc,0,100);
+Serial2.print("Gavg.val=");
+Serial2.print(gwattsAVG);
+Serial2.print(endChar);
+
 }
 
 if(escala()==5 ){  //10 a 50w
@@ -152,7 +221,7 @@ if(escala()==5 ){  //10 a 50w
 Serial2.print("fs2.txt=\"40\"" + endChar);
 Serial2.print("fsm.txt=\"30\"" + endChar);
 Serial2.print("fs1.txt=\"20\"" + endChar);
-
+Fmw_nexAVG=valw_avgNex/1000+0.1;
 valw=fwd_power_mw/1000*Fnex;
 Serial2.print("u1.txt=\"W\"" + endChar);
 Serial2.print("Cw.val=");
@@ -168,10 +237,22 @@ Serial2.print(gwatts);
 Serial2.print(endChar);
 wpp=power_mw_pk/100;
 gwp=map(wpp,0,fc,0,100);
+
  Serial2.print("Gwp.val=");
 
 Serial2.print(gwp);
 Serial2.print(endChar);
+
+//if(nex.currentPageId==12){
+//page 12
+Serial2.print("xavg.val=");
+Serial2.print(Fmw_nexAVG);
+Serial2.print(endChar);
+gwattsAVG=map(Fmw_nexAVG/Fnex,0,fc,0,100);
+Serial2.print("Gavg.val=");
+Serial2.print(gwattsAVG);
+Serial2.print(endChar);
+
 
 }
 if(escala()==6 ) //// 1w a 10w
@@ -182,7 +263,7 @@ fc=10;
 Serial2.print("fs2.txt=\"7\"" + endChar);
 Serial2.print("fsm.txt=\"5\"" + endChar);
 Serial2.print("fs1.txt=\"2\"" + endChar);
-
+Fmw_nexAVG=valw_avgNex/1000+0.1;
  valw=fwd_power_mw/1000*Fnex;
 Serial2.print("u1.txt=\"W\"" + endChar);
 Serial2.print("Cw.val=");
@@ -200,6 +281,15 @@ gwp=map(wpp,0,fc,0,100);
 
 Serial2.print(gwp);
 Serial2.print(endChar);
+//if(nex.currentPageId==12){
+//page 12
+Serial2.print("xavg.val=");
+Serial2.print(Fmw_nexAVG);
+Serial2.print(endChar);
+gwattsAVG=map(Fmw_nexAVG/Fnex,0,fc,0,100);
+Serial2.print("Gavg.val=");
+Serial2.print(gwattsAVG);
+Serial2.print(endChar);
 
 }
 if(escala()==7 )// menor do que 1w
@@ -210,7 +300,7 @@ Serial2.print("fs2.txt=\".7\"" + endChar);
 Serial2.print("fsm.txt=\".5\"" + endChar);
 Serial2.print("fs1.txt=\".2\"" + endChar);
 valw=fwd_power_mw/1000*Fnex;
-
+Fmw_nexAVG=valw_avgNex/1000+0.1;
 Serial2.print("u1.txt=\"mW\"" + endChar);
 Serial2.print("Cw.val=");
 //Serial2.print(fwd_power_mw*Fnex/10);
@@ -228,6 +318,16 @@ gwp=map(wpp,0,fc,0,100);
 
 Serial2.print(gwp);
 Serial2.print(endChar);
+//if(nex.currentPageId==12){
+//page 12
+Serial2.print("xavg.val=");
+Serial2.print(Fmw_nexAVG);
+Serial2.print(endChar);
+gwattsAVG=map(Fmw_nexAVG/Fnex,0,fc,0,100);
+Serial2.print("Gavg.val=");
+Serial2.print(gwattsAVG);
+Serial2.print(endChar);
+
 
 }
 
@@ -268,7 +368,7 @@ Serial2.print("rw.val=");
 Serial2.print(swr_nex);
 Serial2.print(endChar);
 
-if(ref_power_mw<=1.1){ref_power_mw=1;}
+//if(ref_power_mw<=1.1){ref_power_mw=1;}
 
   
   
@@ -296,7 +396,11 @@ Serial2.print("rs1.txt=\"0.5K\"" + endChar);
 Serial2.print("j1.val=");
 Serial2.print(gmwR);
 Serial2.print(endChar);
-
+//-------------------
+Serial2.print("Gref.val=");
+Serial2.print(gmwR);
+Serial2.print(endChar);
+//------------------------
 
 }
 
@@ -320,6 +424,13 @@ Rmw_nex=Rmw_nex/1000+0.1;
 Serial2.print("j1.val=");
 Serial2.print(gmwR);
 Serial2.print(endChar);
+
+//-------------------
+Serial2.print("Gref.val=");
+Serial2.print(gmwR);
+Serial2.print(endChar);
+//------------------------
+
 }
 if(ref_power_mw<500000 and ref_power_mw >= 100000){ // menor  do que 1Kw e maior 100w
 fc=500;
@@ -338,6 +449,12 @@ Rmw_nex=Rmw_nex/1000+0.1;
 Serial2.print("j1.val=");
 Serial2.print(gmwR);
 Serial2.print(endChar);
+//-------------------
+Serial2.print("Gref.val=");
+Serial2.print(gmwR);
+Serial2.print(endChar);
+//------------------------
+
 }
 
 if(ref_power_mw <100000 and ref_power_mw >= 1000){ // menor  do que 1Kw e maior 1w
@@ -354,6 +471,12 @@ Rmw_nex=Rmw_nex/1000+0.1;
 Serial2.print("j1.val=");
 Serial2.print(gmwR);
 Serial2.print(endChar);
+//-------------------
+Serial2.print("Gref.val=");
+Serial2.print(gmwR);
+Serial2.print(endChar);
+//------------------------
+
 }
 
 if(ref_power_mw <1000 and ref_power_mw >= 1){
@@ -371,8 +494,35 @@ Rmw_nex=Rmw_nex/1+0.1;
 Serial2.print("j1.val=");
 Serial2.print(gmwR);
 Serial2.print(endChar);
-}
+//-------------------
+Serial2.print("Gref.val=");
+Serial2.print(gmwR);
+Serial2.print(endChar);
+//------------------------
 
+}
+if(ref_power_mw <1 ){
+  fc=1;
+  Serial2.print("rsf.txt=\"1\"" + endChar);
+Serial2.print("rs2.txt=\".75\"" + endChar);
+Serial2.print("rsm.txt=\".50\"" + endChar);
+Serial2.print("rs1.txt=\".25\"" + endChar);
+
+Rmw_nex=Rmw_nex/1+0.1;
+
+
+ gmwR=map(Rmw_nex,0,fc,0,100);
+
+Serial2.print("j1.val=");
+Serial2.print(gmwR);
+Serial2.print(endChar);
+//-------------------
+Serial2.print("Gref.val=");
+Serial2.print(gmwR);
+Serial2.print(endChar);
+//------------------------
+
+}
 
 
 

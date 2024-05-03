@@ -20,11 +20,11 @@ void trigger1() // actualizar coupler 1
 
          volt1_s1= nex.readNumber("x5.val");  //tensão para o valor dBm mais alto
          volt1_s1= nex.readNumber("x5.val"); 
-          volt1_s1=VtomV(volt1_s1/Fnex);
+          volt1_s1=VtomV(volt1_s1/Fnex/10);
       
          volt2_s1= nex.readNumber("x9.val");  //tensão para o valor dBm mais baixo
          volt2_s1= nex.readNumber("x9.val");
-         volt2_s1=VtomV(volt2_s1/Fnex);
+         volt2_s1=VtomV(volt2_s1/Fnex/10);
        
          att_s1= nex.readNumber("x0.val");
          att_s1= nex.readNumber("x0.val");
@@ -36,7 +36,7 @@ void trigger1() // actualizar coupler 1
         vtest=nex.readNumber("xt.val");
         vtest=nex.readNumber("xt.val");
        Serial.print("trigger1  ");Serial.print(dbm1_s1);
-         vtest=vtest/Fnex;
+         vtest=vtest/Fnex/10;
 
 
   /*
@@ -82,11 +82,11 @@ void trigger2()  // actualizar coupler 2
 
           volt1_s2= nex.readNumber("x52.val");  //tensão para o valor dBm mais alto
          volt1_s2= nex.readNumber("x52.val"); 
-          volt1_s2= VtomV(volt1_s2/Fnex);
+          volt1_s2= VtomV(volt1_s2/Fnex/10);
       
          volt2_s2= nex.readNumber("x92.val");  //tensão para o valor dBm mais baixo
          volt2_s2= nex.readNumber("x92.val");
-         volt2_s2=VtomV(volt2_s2/Fnex);
+         volt2_s2=VtomV(volt2_s2/Fnex/10);
        
          att_s2= nex.readNumber("x0.val");
          att_s2= nex.readNumber("x0.val");
@@ -98,7 +98,7 @@ void trigger2()  // actualizar coupler 2
         vtest=nex.readNumber("xt.val");
         vtest=nex.readNumber("xt.val");
        
-         vtest=vtest/Fnex;
+         vtest=vtest/Fnex/10;
 
   
   
@@ -135,11 +135,11 @@ void trigger3() //  // actualizar coupler 3
 
          volt1_s3= nex.readNumber("x53.val");  //tensão para o valor dBm mais alto
          volt1_s3= nex.readNumber("x53.val"); 
-          volt1_s3= VtomV(volt1_s3/Fnex);
+          volt1_s3= VtomV(volt1_s3/Fnex/10);
       
           volt2_s3= nex.readNumber("x93.val");  //tensão para o valor dBm mais baixo
          volt2_s3= nex.readNumber("x93.val");
-         volt2_s3= VtomV(volt2_s3/Fnex);
+         volt2_s3= VtomV(volt2_s3/Fnex/10);
        
          att_s3= nex.readNumber("x0.val");
          att_s3= nex.readNumber("x0.val");
@@ -151,7 +151,7 @@ void trigger3() //  // actualizar coupler 3
         vtest=nex.readNumber("xt.val");
         vtest=nex.readNumber("xt.val");
        
-         vtest=vtest/Fnex;
+         vtest=vtest/Fnex/10;
 Serial.print("trigger1  ");Serial.print(dbm1_s1);
 
   
@@ -189,11 +189,11 @@ void trigger4()  /// actualizar coupler 4
 
         volt1_s4= nex.readNumber("x54.val");  //tensão para o valor dBm mais alto
          volt1_s4= nex.readNumber("x54.val"); 
-          volt1_s4= VtomV(volt1_s4/Fnex);
+          volt1_s4= VtomV(volt1_s4/Fnex/10);
       
          volt2_s4= nex.readNumber("x94.val");  //tensão para o valor dBm mais baixo
          volt2_s4= nex.readNumber("x94.val");
-         volt2_s4= VtomV(volt2_s4/Fnex);
+         volt2_s4= VtomV(volt2_s4/Fnex/10);
        
          att_s4= nex.readNumber("x0.val");
          att_s4= nex.readNumber("x0.val");
@@ -205,7 +205,7 @@ void trigger4()  /// actualizar coupler 4
         vtest=nex.readNumber("xt.val");
         vtest=nex.readNumber("xt.val");
        
-         vtest=vtest/Fnex;
+         vtest=vtest/Fnex/10;
 
   
 // coupler_calib(int coupler_cal, int16_t dbmHigh,int16_t dbmLow,double fwd_h, double fwd_l )
@@ -235,7 +235,7 @@ cFab();
           vtest=nex.readNumber("xt.val");
         vtest=nex.readNumber("xt.val");
        
-         vtest=vtest/100;
+         vtest=vtest/1000;
 
 
 att_cal=att_s1;
@@ -247,11 +247,11 @@ att_cal=att_s1;
          nex.writeNum("x6.val",(R.cal_AD[1].db10m*100)/10);
          nex.writeNum("x6.val",(R.cal_AD[1].db10m*100)/10);
 
-         nex.writeNum("x4.val",(mVtoV(R.cal_AD[0].Fwd)*100));
-         nex.writeNum("x4.val",(mVtoV(R.cal_AD[0].Fwd)*100));
+         nex.writeNum("x4.val",(mVtoV(R.cal_AD[0].Fwd)*1000));
+         nex.writeNum("x4.val",(mVtoV(R.cal_AD[0].Fwd)*1000));
 
-         nex.writeNum("x4.val",(mVtoV(R.cal_AD[1].Fwd)*100));
-         nex.writeNum("x4.val",(mVtoV(R.cal_AD[1].Fwd)*100));
+         nex.writeNum("x4.val",(mVtoV(R.cal_AD[1].Fwd)*1000));
+         nex.writeNum("x4.val",(mVtoV(R.cal_AD[1].Fwd)*1000));
 
 
         
@@ -402,11 +402,18 @@ saveConfig(config_filename);
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 void trigger17(){
 nex.writeStr("tlk.txt",String(linkOTA));
+
+
+ssid_from_display = nex.readStr("t6.txt");
+password_from_display =nex.readStr("t7.txt");
+
 saveConfig(config_filename);
+delay (1000);
+wifi_connect();
 }
 
 /*__________________________________________________________________
-                   TRIGGER  18
+                   TRIGGER  18   (hex 12)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 void trigger18(){
 
@@ -425,4 +432,71 @@ coupler_name[4]= nex.readStr("t9.txt");
        
          vtest=vtest/100;
 saveConfig(config_filename);
+}
+/*__________________________________________________________________
+                   TRIGGER  20  (hex 14)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+void trigger20(){
+flag1=false;
+millisTempozzz = millis();
+}
+
+/*__________________________________________________________________
+                   TRIGGER  21  (hex 15)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+void trigger21(){
+mode=1;
+Serial2.print("b1.pco=");Serial2.print(63488);Serial2.print(endChar);
+Serial2.print("b2.pco=");Serial2.print(0);Serial2.print(endChar);
+Serial2.print("b3.pco=");Serial2.print(0);Serial2.print(endChar);
+Serial2.print("b6.pco=");Serial2.print(0);Serial2.print(endChar);
+Serial2.print("b7.pco=");Serial2.print(0);Serial2.print(endChar);
+
+}
+
+/*__________________________________________________________________
+                   TRIGGER  22  (hex 16)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+void trigger22(){
+mode=2;
+Serial2.print("b1.pco=");Serial2.print(0);Serial2.print(endChar);
+Serial2.print("b2.pco=");Serial2.print(63488);Serial2.print(endChar);
+Serial2.print("b3.pco=");Serial2.print(0);Serial2.print(endChar);
+Serial2.print("b6.pco=");Serial2.print(0);Serial2.print(endChar);
+Serial2.print("b7.pco=");Serial2.print(0);Serial2.print(endChar);
+}
+
+/*__________________________________________________________________
+                   TRIGGER  23  (hex 17)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+void trigger23(){
+mode=3;
+Serial2.print("b1.pco=");Serial2.print(0);Serial2.print(endChar);
+Serial2.print("b2.pco=");Serial2.print(0);Serial2.print(endChar);
+Serial2.print("b3.pco=");Serial2.print(63488);Serial2.print(endChar);
+Serial2.print("b6.pco=");Serial2.print(0);Serial2.print(endChar);
+Serial2.print("b7.pco=");Serial2.print(0);Serial2.print(endChar);
+
+}
+/*__________________________________________________________________
+                   TRIGGER  24  (hex 18)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+void trigger24(){
+mode=4;
+Serial2.print("b1.pco=");Serial2.print(0);Serial2.print(endChar);
+Serial2.print("b2.pco=");Serial2.print(0);Serial2.print(endChar);
+Serial2.print("b3.pco=");Serial2.print(0);Serial2.print(endChar);
+Serial2.print("b6.pco=");Serial2.print(63488);Serial2.print(endChar);
+Serial2.print("b7.pco=");Serial2.print(0);Serial2.print(endChar);
+}
+/*__________________________________________________________________
+                   TRIGGER  25  (hex 19)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+void trigger25(){
+mode=5;
+Serial2.print("b1.pco=");Serial2.print(0);Serial2.print(endChar);
+Serial2.print("b2.pco=");Serial2.print(0);Serial2.print(endChar);
+Serial2.print("b3.pco=");Serial2.print(0);Serial2.print(endChar);
+Serial2.print("b6.pco=");Serial2.print(0);Serial2.print(endChar);
+Serial2.print("b7.pco=");Serial2.print(63488);Serial2.print(endChar);
 }
